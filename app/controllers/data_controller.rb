@@ -88,8 +88,35 @@ class DataController < ApplicationController
     # Draw the form to input the YAML text data
   end
 
+  # yaml_import in this state, is good if we want to restore backed up objects to how they where,
+  # or populating a clean install.
+  # But not so good if you want to merge an existing DB with what you have in yaml format.
+  # TODO: Make this smart, and if told to, allow merging of data, instead of just overriding.
   def yaml_import
     # Logic to load the YAML text file and create new records from data
+    imported_data = YAML.load(params[:import]['yaml'])
+
+    imported_data.each do |k, objs|
+      objs.each do |obj|  
+        # We don't know what classes we are working with
+        klass = Object.const_get(obj.class.to_s) # so lets call upon some of ruby's dark magic.
+
+        if obj.respond_to?(:ivars)
+          values = obj.ivars["attributes"]
+          obj = klass.new(values)
+          obj.id = values["id"]
+        end
+        # if the object exists, then lets update it.
+        if klass.exists?(obj.id)
+          updates = klass.partial_updates # store the status of partial_updates
+          klass.partial_updates = false   # Force it to be false
+          obj.save                        # This should save all attributes.
+          klass.partial_updates = updates # Now put it back to what it was.
+        else # Otherwise, lets put it in.
+          obj.send(:create)
+        end
+      end
+    end
   end
  
 end

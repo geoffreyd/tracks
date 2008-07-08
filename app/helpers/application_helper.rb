@@ -144,4 +144,10 @@ module ApplicationHelper
     page.visual_effect :fade, 'flash', :duration => fade_duration
   end
   
+  # Sets the Page Badge to count, and it we are in a Fluid.app, update the dock badge
+  def badge_count(count)
+    page.replace_html "badge_count", count
+    page.call 'BadgeCount.update'
+  end
+  
 end

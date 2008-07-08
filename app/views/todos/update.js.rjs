@@ -30,8 +30,8 @@ if @saved
       end
       
       # update badge count
-      page.replace_html("badge_count", @remaining_in_context) if source_view_is :context
-      page.replace_html("badge_count", @down_count) if source_view_is :todo
+      page.badge_count @remaining_in_context if source_view_is :context
+      page.badge_count @down_count if source_view_is :todo
       
       # show todo in context
       page.delay(0.5) do
@@ -49,19 +49,19 @@ if @saved
     if @project_changed
       page[@todo].remove
       page.show("p#{@original_item_project_id}empty-nd") if (@remaining_undone_in_project == 0)
-      page.replace_html "badge_count", @remaining_undone_in_project
+      page.badge_count @remaining_undone_in_project
     elsif @todo.deferred? 
       page[@todo].remove
       page.show("p#{@original_item_project_id}empty-nd") if (@remaining_undone_in_project == 0)
       page.insert_html :bottom, "tickler", :partial => 'todos/todo', :locals => { :parent_container_type => parent_container_type }
       page['tickler-empty-nd'].hide
-      page.replace_html "badge_count", @down_count
+      page.badge_count @down_count
     elsif @todo_was_activated_from_deferred_state
       page[@todo].remove
       page['tickler-empty-nd'].show if (@deferred_count == 0)
       page.insert_html :bottom, "p#{@todo.project_id}", :partial => 'todos/todo', :locals => { :parent_container_type => parent_container_type }
       page["p#{@todo.project_id}empty-nd"].hide
-      page.replace_html "badge_count", @down_count
+      page.badge_count @down_count
     else
       page.replace dom_id(@todo), :partial => 'todos/todo', :locals => { :parent_container_type => parent_container_type }
       page.visual_effect :highlight, dom_id(@todo), :duration => 3
@@ -70,7 +70,7 @@ if @saved
     if !@todo.deferred?
       page[@todo].remove
       page.show(empty_container_msg_div_id) if (@down_count == 0)
-      page.replace_html "badge_count", @down_count
+      page.badge_count @down_count
     elsif @context_changed
       page[@todo].remove
       page.visual_effect(:fade, "c#{@original_item_context_id}", :duration => 0.4) if (@remaining_in_context == 0)
@@ -78,7 +78,7 @@ if @saved
       page.call "todoItems.expandNextActionListingByContext", "c#{@todo.context_id}items", true
       page[empty_container_msg_div_id].hide unless empty_container_msg_div_id.nil?
       page.insert_html :bottom, "c#{@todo.context_id}items", :partial => 'todos/todo', :locals => { :parent_container_type => parent_container_type }
-      page.replace_html("badge_count", @down_count)
+      page.badge_count @down_count
       page.delay(0.5) do
         page.call "todoItems.ensureContainerHeight", "c#{@original_item_context_id}items"
         page.call "todoItems.ensureContainerHeight", "c#{@todo.context_id}items"

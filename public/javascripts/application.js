@@ -170,3 +170,18 @@ CookieManager.prototype =
         }
     }
 }
+
+/* set the dock badge if the browser is a Fluid app*/
+var BadgeCount = {
+  update: function(){
+    if (window.fluid) {
+      var count = document.getElementById("badge_count").innerHTML
+      if (count <= 0) {
+        count = ""
+      }
+	    window.fluid.setDockBadge(count)
+	    return true
+    }
+  }
+};
+Event.observe(window, 'load', BadgeCount.update());

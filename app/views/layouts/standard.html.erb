@@ -19,6 +19,8 @@ window.onload=function(){
   Nifty("div#project_new_project_container","normal");
   Nifty("div#context_new_container","normal");
   if ($('flash').visible()) { new Effect.Fade("flash",{duration:5.0}); }
+  // A little messy, but when I get the observer to work, we can get rid of this.
+  BadgeCount.update();
 }
 </script>
 

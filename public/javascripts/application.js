@@ -172,8 +172,15 @@ CookieManager.prototype =
 }
 
 /* set the dock badge if the browser is a Fluid app*/
-var BadgeCount = {
-  update: function(){
+var Fluid = {
+  init: function() {
+    if (!window.fluid) return
+    with (Fluid){
+      badgeCount()
+      menuItems()
+    }
+  },
+  badgeCount: function(){
     if (window.fluid) {
       var count = document.getElementById("badge_count").innerHTML
       if (count <= 0) {
@@ -182,6 +189,22 @@ var BadgeCount = {
 	    window.fluid.setDockBadge(count)
 	    return true
     }
+  },
+  menuItems: function(){
+    with (Fluid) {
+      addDockLink("Home", '/')
+      addDockLink("Contexts",'/contexts')
+      addDockLink("Projects",'/projects')
+      addDockLink("Tickler",'/tickler')
+      addDockLink("Done",'/done')
+      addDockLink("Notes",'/notes')
+      addDockLink("Preferences",'/preferences')
+    }
+  },
+  addDockLink: function(name, path) {
+    window.fluid.addDockMenuItem(name, function() {
+      window.location = path
+    })
   }
 };
-Event.observe(window, 'load', BadgeCount.update());
+Event.observe(window, 'load', Fluid.init());
